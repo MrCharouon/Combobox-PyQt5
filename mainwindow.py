@@ -1,9 +1,10 @@
 # importing libraries
-from PyQt5.QtWidgets import * 
+from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui
-from PyQt5.QtGui import * 
-from PyQt5.QtCore import * 
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 import sys
+import sqlite3
 
 class AnotherWindow(QWidget):
 
@@ -15,32 +16,44 @@ class AnotherWindow(QWidget):
         self.width = 400
         self.height = 140
         self.initUI()
-    
+
     def initUI(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-    
+
         # Create textbox
         self.textbox = QLineEdit(self)
         self.textbox.move(20, 20)
         self.textbox.resize(280,40)
-        
+
         # Create a button in the window
         self.button = QPushButton('Show text', self)
         self.button.move(20,80)
-        
+
         # connect button to function on_click
         self.button.clicked.connect(self.on_click)
-        
+
     @pyqtSlot()
     def on_click(self):
         textboxValue = self.textbox.text()
-        QMessageBox.question(self, 'Message', "You typed: " + textboxValue, QMessageBox.Ok, QMessageBox.Ok)
-        self.textbox.setText("")
+        if (textboxValue == ''):
+            textboxValue = ("لطفا فیلد را صحیح وارد کنید")
+            QMessageBox.question(self, 'Message', textboxValue, QMessageBox.Ok, QMessageBox.Ok)
+            self.textbox.setText("")
+        else:
 
-  
+
+            result = itemss()
+            r = result.items_list()
+            r.append(textboxValue)
+            print(type(r),len(r))
+
+            QMessageBox.question(self, 'Message', " لیست " + textboxValue + " با موفقیت اضافه شد ", QMessageBox.Ok, QMessageBox.Ok)
+            self.textbox.setText("")
+
+
 class Window(QMainWindow):
-  
+
     def __init__(self):
         super().__init__()
         self.w = AnotherWindow()
@@ -48,13 +61,16 @@ class Window(QMainWindow):
         self.setGeometry(100, 100, 600, 400)
         self.UiComponents()
         self.show()
-  
+
+
     def UiComponents(self):
-  
+
         self.combo_box = QComboBox(self)
         self.combo_box.setGeometry(200, 150, 120, 30)
-        items = ["linux", "windows", "mac"]
-        self.combo_box.addItems(items)
+
+        result = itemss()
+        r = result.items_list()
+        self.combo_box.addItems(r)
 
 
         btn1 = QPushButton('Show', self)
@@ -82,7 +98,14 @@ class Window(QMainWindow):
 
     def show_new_window(self, checked):
         self.w.show()
-    
+
+class itemss():
+
+    def items_list(self):
+        items = ["linux", "windows", "mac"]
+        return items
+
+
 App = QApplication(sys.argv)
 window = Window()
 sys.exit(App.exec())
